@@ -1,0 +1,58 @@
+from datetime import datetime
+
+# Define a class to handle employee payroll
+class Payroll:
+    def __init__(self, name, hourly_rate):
+        self.name = name
+        self.hourly_rate = hourly_rate
+        self.time_records = []  # Will store tuples of (clock_in, clock_out)
+
+    def clock_in(self):
+        """Record the clock-in time."""
+        clock_in = datetime.now()
+        self.time_records.append({'clock_in': clock_in})
+        print(f"{self.name} clocked in at {clock_in.strftime('%Y-%m-%d %H:%M:%S')}")
+        
+    def clock_out(self):
+        """Record the clock-out time and calculate the hours worked."""
+        clock_out = datetime.now()
+        if not self.time_records or 'clock_out' in self.time_records[-1]:
+            print("Error: Clock-in time is missing.")
+            return
+        
+        self.time_records[-1]['clock_out'] = clock_out
+        clock_in = self.time_records[-1]['clock_in']
+        
+        # Calculate hours worked
+        worked_hours = (clock_out - clock_in).seconds / 3600  # convert seconds to hours
+        print(f"{self.name} clocked out at {clock_out.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Worked hours: {worked_hours:.2f} hours")
+        
+        # Calculate and print the pay
+        pay = worked_hours * self.hourly_rate
+        print(f"Total pay: ${pay:.2f}")
+        
+    def total_pay(self):
+        """Calculate total pay based on hours worked."""
+        total_hours = 0
+        for record in self.time_records:
+            if 'clock_out' in record:
+                worked_hours = (record['clock_out'] - record['clock_in']).seconds / 3600
+                total_hours += worked_hours
+        total_pay = total_hours * self.hourly_rate
+        return total_hours, total_pay
+
+# Example usage
+employee = Payroll('John Doe', 15.50)  # hourly rate of $15.50
+
+# Clock-in and clock-out actions
+employee.clock_in()
+# Simulate the employee working for a few hours by waiting
+import time
+time.sleep(2)  # Simulate 2 seconds (can be replaced by real time tracking)
+employee.clock_out()
+
+# Get total pay and hours worked
+hours, total = employee.total_pay()
+print(f"\nTotal worked hours: {hours:.2f} hours")
+print(f"Total pay: ${total:.2f}")
